@@ -1,0 +1,11 @@
+.idea
+build/
+dist/
+config.ini
+
+# 排除文件
+*.exe*
+*.pyc
+
+商品数据*
+业务数据*
