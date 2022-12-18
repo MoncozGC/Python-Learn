@@ -1,38 +1,44 @@
-# Python-Learn
+# Project Engineering Description(项目工程描述)
 
-#### 介绍
-Python基础编程示例
+```text
+├──Employ工程
+	├──BHDSWarehouse: YKYY数据仓库项目测试使用
+	├──employ: 练习使用
+	├──hpv: hpv九价购买
+	├──monitor: Flink、YARN、Zabbix组件监控
+	├──Participle: Jieba中文分词器使用
+	├──PHDS: PHDS药店健康诊断系统测试使用
+	├──reborn: 投胎模拟器
+	├──reptile: 爬虫相关
+	├──utils: 工具类使用
+	├──WxChatRecordTool: 统计微信群聊天记录发言数以及制作聊天记录词云
+```
 
-#### 软件架构
-软件架构说明
+### 配置信息
+在根目录下配置config.ini文件, 基本的日志和数据库信息
+```ini
+# base config
+[log]
+outDirectory=./Logs
+fileTimeFormat = %Y%m%d
+timeFormat = %Y-%m-%d %H:%M:%S.%f
+recode=0
 
+# MYSQL PHDS-dev
+[dbload::phds_base]
+dbtype = mysql
+host = xxxx
+port = 3306
+username = root
+password = root
+database = database
 
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
-
+# CK PHDS-dev
+[dbload::warehouse_phds]
+dbtype = clickHouse
+host = xxxx
+port = 8235
+username = default
+password = default
+database = database
+```
