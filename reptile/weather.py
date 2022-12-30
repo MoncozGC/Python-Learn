@@ -26,7 +26,8 @@ def getHTMLText(url):
         return ""
 
 
-def insert_database(city_code, city_name, weather_day, weather_situation, temperature, air_quality, wind_situation,
+def insert_database(city_code, city_name, week, weather_day, weather_situation, temperature, air_quality,
+                    wind_situation,
                     create_date, create_time):
     conn = pymysql.connect(connect_timeout=5, write_timeout=5, host='localhost', port=3306, user='root',
                            password='hadoop',
@@ -49,12 +50,12 @@ def insert_database(city_code, city_name, weather_day, weather_situation, temper
 
     # 使用cursor()方法获取操作游标
     cursor = conn.cursor()
-    info_sql = """INSERT INTO world.weather (`city_code`,`city_name`, `weather_day`, `weather_situation`, `temperature`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    info_sql = """INSERT INTO world.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     # 执行SQL
     cursor.execute(info_sql,
-                   (city_code, city_name, weather_day, weather_situation, temperature, air_quality,
+                   (city_code, city_name, week, weather_day, weather_situation, temperature, air_quality,
                     wind_situation, create_date, create_time))
 
     # 4. 操作成功提交事务
@@ -100,15 +101,26 @@ if __name__ == '__main__':
             city = c.get_text()
 
         # 格式化输出
-        tplt = "{0:^8}\t{1:^8}\t{2:^8}\t{3:^8}\t{4:^8}\t{5:^8}"
-        print(tplt.format('城市', '日期', '天气情况', '温度', '天气质量', '凤向情况'))
+        tplt = "{0:^8}\t{1:^8}\t{2:^8}\t{3:^8}\t{4:^8}\t{5:^8}\t{6:^8}"
+        print(tplt.format('城市', 'Week', '日期', '天气情况', '温度', '天气质量', '凤向情况'))
+        insert_num = 0
         for c in content_list:
             tmp = c.get_text()
             split_str = date_conversion(tmp.strip().split()[0])
-            t0 = split_str + tmp.strip().split()[1]
+            week = split_str
+            date_target = tmp.split()[1].strip("()")
             t1 = tmp.strip().split()[2]
             t2 = tmp.strip().split()[3].split('℃')[0] + '℃'
             t3 = tmp.strip().split()[3].split('℃')[1][0]
             t4 = tmp.strip().split()[3].split('℃')[1][1:] + " " + tmp.strip().split()[4]
-            print(tplt.format(city, t0, t1, t2, t3, t4))
-            insert_database(city_code, city, t0, t1, t2, t3, t4, today, create_time)
+            print(tplt.format(city, week, date_target, t1, t2, t3, t4))
+            try:
+                insert_database(city_code, city, week, date_target, t1, t2, t3, t4, today, create_time)
+                insert_num = insert_num + 1
+            except Exception as e:
+                insert_num = insert_num - 1
+
+        if insert_num > 0:
+            print(city_name + " 共插入数据: " + str(insert_num))
+        else:
+            print(city_name + " 数据未改动, 无需插入...")
