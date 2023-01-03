@@ -66,15 +66,16 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
 
 def date_conversion(date):
     """
-    时间转换: 今天 -> 周二; 明天 -> 周三
+    时间转换: 今天 -> 星期二; 明天 -> 星期三
     """
-    week_list = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+    week_list = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
     if date == '今天':
         return week_list[datetime.today().isoweekday() - 1]
     elif date == '明天':
         return week_list[datetime.today().isoweekday()]
     else:
-        return date
+        # 将 周 替换成 星期
+        return date.replace('周', '星期').replace('星期日', '星期天')
 
 
 if __name__ == '__main__':
@@ -82,6 +83,7 @@ if __name__ == '__main__':
     create_time = datetime.today().strftime("%H:%M:%S")
     print(create_time)
     crawling_city = ['101250203?湘乡', '101250101?长沙']
+    # crawling_city = ['101250203?湘乡', '101250101?长沙', '101010100?北京', '101020100?上海', '101280601?深圳', '101310101?海南', '101040100?重庆', '101240901?萍乡', '101050101?哈尔滨']
     # 爬取 长沙的天气
     # url = 'https://tianqi.so.com/weather/'
     for i in crawling_city:
