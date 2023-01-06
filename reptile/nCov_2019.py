@@ -111,11 +111,14 @@ if __name__ == '__main__':
     n_create_date = datetime.today().date()
     n_create_time = datetime.today().strftime("%H:%M:%S")
 
+    # 爬取分页条数, (1,50]
+    reptile_num = 1
+
     insert_num = 0
     # 循环遍历数据
-    for i in range(0, 1):
+    for i in range(0, reptile_num):
         url = 'https://www.chinacdc.cn/jkzt/crb/zl/szkb_11803/jszl_11809/'
-        # 跳过动态首页第一条数据, 因为每页第一条数据为重复数据(展示的当天的疫情动态数据); flag/falg_num用来开关控制
+        # flag/falg_num用来开关控制
         flag = False
         flag_num = 0
         if i == 0:
@@ -141,7 +144,7 @@ if __name__ == '__main__':
                 href_url = detailed_url + info.get('href').strip('./')
                 href_title = info.get_text()
                 flag_num = flag_num + 1
-                # 满足条件跳过第一条数据
+                # 跳过动态首页第一条数据, 因为每页第一条数据为重复数据(展示的当天的疫情动态数据);
                 if flag and flag_num == 1: continue
                 # 拼接详细的链接地址及标题
                 href_info = "详细的链接地址: " + href_url + " - " + href_title
@@ -168,6 +171,6 @@ if __name__ == '__main__':
         url = ''
 
     if insert_num > 0:
-        print("数据保存至本地及数据库中完成, 条数: " + str(insert_num))
+        print("\n\n数据保存至本地及数据库中完成, 条数: " + str(insert_num))
     else:
-        print("数据未改动, 未插入...")
+        print("\n\n数据未改动, 未插入...")
