@@ -3,13 +3,12 @@
 # Date  : 2022/12/27
 # Desc  : 天气数据爬取, 并且入库
 # 导入相关的包
+import warnings
 from datetime import datetime
 
 import pymysql
 import requests
-import bs4
 from bs4 import BeautifulSoup
-import warnings
 
 warnings.filterwarnings('ignore')
 
@@ -26,7 +25,8 @@ def getHTMLText(url):
         return ""
 
 
-def insert_database(city_code, city_name, week, weather_day, weather_situation, temperature, air_quality,
+def insert_database(city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max,
+                    air_quality,
                     wind_situation,
                     create_date, create_time):
     conn = pymysql.connect(connect_timeout=5, write_timeout=5, host='localhost', port=3306, user='root',
@@ -50,12 +50,13 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
 
     # 使用cursor()方法获取操作游标
     cursor = conn.cursor()
-    info_sql = """INSERT INTO world.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    info_sql = """INSERT INTO world.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     # 执行SQL
     cursor.execute(info_sql,
-                   (city_code, city_name, week, weather_day, weather_situation, temperature, air_quality,
+                   (city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max,
+                    air_quality,
                     wind_situation, create_date, create_time))
 
     # 4. 操作成功提交事务
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     today = datetime.today().date()
     create_time = datetime.today().strftime("%H:%M:%S")
     print(create_time)
-    crawling_city = ['101250203?湘乡', '101250101?长沙']
+    crawling_city = ['101250101?长沙']
     # crawling_city = ['101250203?湘乡', '101250101?长沙', '101010100?北京', '101020100?上海', '101280601?深圳', '101310101?海南', '101040100?重庆', '101240901?萍乡', '101050101?哈尔滨']
     # 爬取 长沙的天气
     # url = 'https://tianqi.so.com/weather/'
@@ -103,8 +104,8 @@ if __name__ == '__main__':
             city = c.get_text()
 
         # 格式化输出
-        tplt = "{0:^8}\t{1:^8}\t{2:^8}\t{3:^8}\t{4:^8}\t{5:^8}\t{6:^8}"
-        print(tplt.format('城市', 'Week', '日期', '天气情况', '温度', '天气质量', '凤向情况'))
+        tplt = "{0:^8}\t{1:^8}\t{2:^8}\t{3:^8}\t{4:^8}\t{5:^8}\t{6:^8}\t{7:^8}"
+        print(tplt.format('城市', 'Week', '日期', '天气情况', '最低温度', '最高温度', '天气质量', '凤向情况'))
         insert_num = 0
         for c in content_list:
             tmp = c.get_text()
@@ -112,15 +113,17 @@ if __name__ == '__main__':
             week = split_str
             date_target = tmp.split()[1].strip("()")
             t1 = tmp.strip().split()[2]
-            t2 = tmp.strip().split()[3].split('℃')[0] + '℃'
+            temperature_min = tmp.strip().split()[3].split('℃')[0].split('/')[0] + '℃'
+            temperature_max = tmp.strip().split()[3].split('℃')[0].split('/')[1] + '℃'
             t3 = tmp.strip().split()[3].split('℃')[1][0]
             t4 = tmp.strip().split()[3].split('℃')[1][1:] + " " + tmp.strip().split()[4]
-            print(tplt.format(city, week, date_target, t1, t2, t3, t4))
+            print(tplt.format(city, week, date_target, t1, temperature_min, temperature_max, t3, t4))
             try:
-                insert_database(city_code, city, week, date_target, t1, t2, t3, t4, today, create_time)
+                insert_database(city_code, city, week, date_target, t1, temperature_min, temperature_max, t3, t4, today,
+                                create_time)
                 insert_num = insert_num + 1
             except Exception as e:
-                insert_num = insert_num - 1
+                ""
 
         if insert_num > 0:
             print(city_name + " 共插入数据: " + str(insert_num))
