@@ -2,6 +2,7 @@
 # Author: MoncozGC
 # Date  : 2022/12/27
 # Desc  : nCov-2019 CN
+# nCov-2019 CN 发布地址: https://www.chinacdc.cn/jkzt/crb/zl/szkb_11803/jszl_11809/
 import re
 from datetime import datetime
 
@@ -72,7 +73,7 @@ def insert_database(ncov_date, ncov_title, ncov_info, ncov_link, create_date, cr
     #     `ncov_link`   VARCHAR(100) COMMENT '新冠情况详细地址',
     #     `create_date` VARCHAR(10) COMMENT '爬取日期',
     #     `create_time` VARCHAR(10) COMMENT '爬取时间',
-    #     PRIMARY KEY (`ncov_date`, `create_date`)
+    #     PRIMARY KEY (`ncov_date`)
     # ) ENGINE = InnoDB
     #   DEFAULT CHARSET = utf8
     # ;
@@ -98,7 +99,51 @@ def insert_config(ncov_date, ncov_title, ncov_info, ncov_link, create_date, crea
     """
     sql = "INSERT INTO world.ncov_2019 (`ncov_date`, `ncov_title`, `ncov_info`, `ncov_link`,`create_date`, `create_time`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" \
           % (ncov_date, ncov_title, ncov_info, ncov_link, create_date, create_time)
-    getDatabaseOperation('world').execute(sql)
+    execute = getDatabaseOperation('world').execute(sql)
+    return execute
+
+def reptile_handle(content_list, insert_num, is_first):
+    flag_num = 0
+    for info in content_list:
+        # 正则模糊匹配, 当满足时查询数据
+        line_text = info.get_text()
+        match_score = re.findall('.*疫情最新情况.*', line_text)
+        if len(match_score) > 0:
+            detailed_url = 'https://www.chinacdc.cn/jkzt/crb/zl/szkb_11803/jszl_11809/'
+            detailed_href = info.get('href')
+            href_url = detailed_url + info.get('href').strip('./')
+            href_title = info.get_text()
+            flag_num = flag_num + 1
+            # 跳过动态首页第一条数据, 因为每页第一条数据为重复数据(展示的当天的疫情动态数据);
+            if flag and flag_num == 1: continue
+            # 拼接详细的链接地址及标题
+            href_info = "详细的链接地址: " + href_url + " - " + href_title
+            # 根据链接地址获取时间
+            href_date = href_info.split('jszl_11809/')[1].split('/t')[0][0:4] + '年' + href_info.split('截至')[1].split('24时')[0]
+            trans_date = time_cn_trans(href_date)
+            print(trans_date + " - " + href_info)
+            # 根据具体链接数据获取文本信息
+            detailed_info = get_detailed_info(href_url)
+            for detailed_date in detailed_info:
+                detailed_text = detailed_date.get_text().strip()
+                # print("信息获取\n\n " + detailed_text)
+                # 将获取的文本信息保存到本地及数据库中
+                try:
+                    # insert_database(trans_date, href_title, detailed_text, href_url, n_create_date, n_create_time)
+                    execute = insert_config(trans_date, href_title, detailed_text, href_url, n_create_date, n_create_time)
+                    if execute > 0:
+                        insert_num = insert_num + 1
+                    save_info(href_info, trans_date, detailed_text)
+                except Exception as e:
+                    ""
+
+                # 为False则表示仅爬取网页的最新数据, 爬取完后跳出
+                if not is_first: return
+
+        # 置空url, 避免url拼接时重复
+        url = ''
+
+    return insert_num
 
 
 if __name__ == '__main__':
@@ -111,16 +156,19 @@ if __name__ == '__main__':
     n_create_date = datetime.today().date()
     n_create_time = datetime.today().strftime("%H:%M:%S")
 
-    # 爬取分页条数, (1,50]
-    reptile_num = 1
+    # 控制爬取分页条数, (1,50]
+    reptile_num = 3
+    # 控制是否只爬取最新的一条数据, 如果为False则 reptile_num必需等于 1, 否则会爬取旧数据
+    is_first = True
 
+    # flag/flag_num控制跳过网页的第一条数据, 避免在全量爬取时爬取重复数据
+    flag = False
+
+    # 记录条数
     insert_num = 0
     # 循环遍历数据
     for i in range(0, reptile_num):
         url = 'https://www.chinacdc.cn/jkzt/crb/zl/szkb_11803/jszl_11809/'
-        # flag/falg_num用来开关控制
-        flag = False
-        flag_num = 0
         if i == 0:
             url = url + "index" + ".html"
         else:
@@ -134,43 +182,9 @@ if __name__ == '__main__':
         # content_list = soup.find_all('ul', class_='jal-item-list')
         content_list = soup.find_all('a')
 
-        for info in content_list:
-            # 正则模糊匹配, 当满足时查询数据
-            line_text = info.get_text()
-            match_score = re.findall('.*疫情最新情况.*', line_text)
-            if len(match_score) > 0:
-                detailed_url = 'https://www.chinacdc.cn/jkzt/crb/zl/szkb_11803/jszl_11809/'
-                detailed_href = info.get('href')
-                href_url = detailed_url + info.get('href').strip('./')
-                href_title = info.get_text()
-                flag_num = flag_num + 1
-                # 跳过动态首页第一条数据, 因为每页第一条数据为重复数据(展示的当天的疫情动态数据);
-                if flag and flag_num == 1: continue
-                # 拼接详细的链接地址及标题
-                href_info = "详细的链接地址: " + href_url + " - " + href_title
-                # 根据链接地址获取时间
-                href_date = href_info.split('jszl_11809/')[1].split('/t')[0][0:4] + '年' + \
-                            href_info.split('截至')[1].split('24时')[0]
-                trans_date = time_cn_trans(href_date)
-                print(href_info)
-                # 根据具体链接数据获取文本信息
-                detailed_info = get_detailed_info(href_url)
-                for detailed_date in detailed_info:
-                    detailed_text = detailed_date.get_text().strip()
-                    # print("信息获取\n\n " + detailed_text)
-                    # 将获取的文本信息保存到本地
-                    try:
-                        insert_database(trans_date, href_title, detailed_text, href_url, n_create_date, n_create_time)
-                        # insert_config(href_date, href_title, detailed_text, href_url, n_create_date, n_create_time)
-                        save_info(href_info, trans_date, detailed_text)
-                        insert_num = insert_num + 1
-                    except Exception as e:
-                        ""
+        insert_num = reptile_handle(content_list, insert_num, is_first)
 
-        # 置空url, 避免url拼接时重复
-        url = ''
-
-    if insert_num > 0:
+    if insert_num is not None and insert_num > 0:
         print("\n\n数据保存至本地及数据库中完成, 条数: " + str(insert_num))
     else:
         print("\n\n数据未改动, 未插入...")

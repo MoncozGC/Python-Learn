@@ -214,12 +214,14 @@ class DatabaseManagerBean(object):
             connect.commit()
             return cursor.rowcount
         except Exception as e:
-            traceback.print_exc()
+            # 打印详细的堆栈信息
+            # traceback.print_exc()
             try:
                 if connect is not None: connect.rollback()
             except:
                 pass
-            print('%s 执行错误\nSQL: %s\nERROR: %s' % (self.flag, sql, e))
+            # 打印报错信息
+            # print('%s 执行错误\nSQL: %s\nERROR: %s' % (self.flag, sql, e))
 
             self.dataErrorCallback(e, dataErrorCallback)
         finally:
