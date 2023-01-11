@@ -102,7 +102,11 @@ def insert_config(ncov_date, ncov_title, ncov_info, ncov_link, create_date, crea
     execute = getDatabaseOperation('world').execute(sql)
     return execute
 
+
 def reptile_handle(content_list, insert_num, is_first):
+    """
+    爬虫逻辑处理
+    """
     flag_num = 0
     for info in content_list:
         # 正则模糊匹配, 当满足时查询数据
@@ -182,6 +186,7 @@ if __name__ == '__main__':
         # content_list = soup.find_all('ul', class_='jal-item-list')
         content_list = soup.find_all('a')
 
+        # 爬虫逻辑处理
         insert_num = reptile_handle(content_list, insert_num, is_first)
 
     if insert_num is not None and insert_num > 0:
