@@ -29,9 +29,9 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
                     air_quality,
                     wind_situation,
                     create_date, create_time):
-    conn = pymysql.connect(connect_timeout=5, write_timeout=5, host='localhost', port=3306, user='root',
+    conn = pymysql.connect(connect_timeout=5, write_timeout=5, host='192.168.31.219', port=3306, user='root',
                            password='hadoop',
-                           database='world', charset="utf8")
+                           database='dev', charset="utf8")
     # 建库语句: CREATE DATABASE test;
     # 建表语句
     # CREATE TABLE IF NOT EXISTS `weather`
@@ -50,7 +50,7 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
 
     # 使用cursor()方法获取操作游标
     cursor = conn.cursor()
-    info_sql = """INSERT INTO world.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
+    info_sql = """INSERT INTO dev.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     # 执行SQL
