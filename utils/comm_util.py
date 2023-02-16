@@ -543,3 +543,17 @@ def _mdiv_round_f(a, b, digit=4):
 
 def _multipli_round_f(a, b, digit=4):
     return float(decimalRound(_multipli(a, b), digit))
+
+
+def chinese_conversion(values):
+    """
+    中文转换为汉字, 首字母大写
+    :param values: 汉字
+    :return: 输出拼音
+    """
+    from xpinyin import Pinyin
+    values_con = Pinyin().get_pinyin(values).split('-')
+    result = ''
+    for i in range(0, len(values_con)):
+        result = result + values_con[i].capitalize()
+    return result

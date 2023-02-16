@@ -126,6 +126,7 @@ if __name__ == '__main__':
                 ""
 
         if insert_num > 0:
-            print(city_name + " 共插入数据: " + str(insert_num))
+            # ljust右侧填充对齐字符串
+            print(chinese_conversion(city_name).ljust(12) + "共插入数据: " + str(insert_num))
         else:
-            print(city_name + " 数据未改动, 无需插入...")
+            print(chinese_conversion(city_name).ljust(12) + "数据未改动, 无需插入...")
