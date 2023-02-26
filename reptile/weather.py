@@ -27,9 +27,7 @@ def getHTMLText(url):
         return ""
 
 
-def insert_database(city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max,
-                    air_quality,
-                    wind_situation,
+def insert_database(city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max, air_quality, wind_situation, sunrise, sunset,
                     create_date, create_time):
     conn = pymysql.connect(connect_timeout=5, write_timeout=5, host='192.168.31.219', port=3306, user='root',
                            password='hadoop',
@@ -42,9 +40,11 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
     #     `city_name`         INT COMMENT '天气城市',
     #     `weather_day`       VARCHAR(100) NOT NULL COMMENT '天气日期',
     #     `weather_situation` VARCHAR(40)  NOT NULL COMMENT '天气情况',
-    #     `temperature`         VARCHAR(40) COMMENT '天气温度',
+    #     `temperature`       VARCHAR(40) COMMENT '天气温度',
     #     `air_quality`       VARCHAR(40) COMMENT '空气质量',
     #     `wind_situation`    VARCHAR(40) COMMENT '风向情况',
+    #      sunrise            VARCHAR(30)  NULL COMMENT '日出时间',
+    #      sunset             VARCHAR(30)  NULL COMMENT '日落时间',
     #     create_time         datetime DEFAULT CURRENT_TIMESTAMP COMMENT '爬取时间',
     #     PRIMARY KEY (`id`)
     # ) ENGINE = InnoDB
@@ -52,14 +52,25 @@ def insert_database(city_code, city_name, week, weather_day, weather_situation, 
 
     # 使用cursor()方法获取操作游标
     cursor = conn.cursor()
-    info_sql = """INSERT INTO dev.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, `create_date`, `create_time`) 
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
+    # 因为只能获取到当天的日出日落时间, 所以当写入日期为当天才将数据入库
+    # if (datetime.today().strftime("%m-%d") == weather_day):
+    info_sql = """INSERT INTO dev.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, 
+    `sunrise`, `sunset` ,`create_date`, `create_time`) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     # 执行SQL
     cursor.execute(info_sql,
                    (city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max,
-                    air_quality,
-                    wind_situation, create_date, create_time))
+                    air_quality, wind_situation, sunrise, sunset,
+                    create_date, create_time))
+    # else:
+    #     info_sql = """INSERT INTO dev.weather (`city_code`,`city_name`, `week`,`weather_day`, `weather_situation`, `temperature_min`, `temperature_max`, `air_quality`, `wind_situation`, `create_date`, `create_time`)
+    #     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    #     # 执行SQL
+    #     cursor.execute(info_sql,
+    #                    (city_code, city_name, week, weather_day, weather_situation, temperature_min, temperature_max,
+    #                     air_quality, wind_situation,
+    #                     create_date, create_time))
 
     # 4. 操作成功提交事务
     conn.commit()
@@ -75,10 +86,26 @@ def date_conversion(date):
     if date == '今天':
         return week_list[datetime.today().isoweekday() - 1]
     elif date == '明天':
-        return week_list[datetime.today().isoweekday()]
+        index = datetime.today().isoweekday()
+        # 如果当天为周日, 则直接获取下标为1的数据
+        if index == 7:
+            week_select = week_list[0]
+        else:
+            week_select = week_list[index]
+        return week_select
     else:
         # 将 周 替换成 星期
         return date.replace('周', '星期').replace('星期日', '星期天')
+
+
+def sunrise_info(sun_info):
+    """
+    获取日出日落信息
+    :param values:
+    :return:
+    """
+    values = sun_info[sun_info.index('日出'):]
+    return values[:8].strip("日出："), values[8:].strip("日落：")
 
 
 if __name__ == '__main__':
@@ -101,6 +128,16 @@ if __name__ == '__main__':
         # 提取目标值
         content_list = soup.find_all('ul', class_='weather-columns')
         city_list = soup.find_all('strong', class_='change-title')
+        city_info = soup.find_all('div', class_='cur-weather g-fl')
+
+        # 获取当天的日出日落信息
+        sunrise = ""
+        sunset = ""
+        for value in city_info:
+            sunrise, sunset = sunrise_info(value.get_text())
+            print(sunrise + "---" + sunset)
+            break
+
         city = ''
         for c in city_list:
             city = c.get_text()
@@ -114,15 +151,15 @@ if __name__ == '__main__':
             split_str = date_conversion(tmp.strip().split()[0])
             week = split_str
             date_target = tmp.split()[1].strip("()")
-            t1 = tmp.strip().split()[2]
+            situation = tmp.strip().split()[2]
             temperature_min = tmp.strip().split()[3].split('℃')[0].split('/')[0] + '℃'
             temperature_max = tmp.strip().split()[3].split('℃')[0].split('/')[1] + '℃'
-            t3 = tmp.strip().split()[3].split('℃')[1][0]
-            t4 = tmp.strip().split()[3].split('℃')[1][1:] + " " + tmp.strip().split()[4]
-            print(tplt.format(city, week, date_target, t1, temperature_min, temperature_max, t3, t4))
+            air_quality = tmp.strip().split()[3].split('℃')[1][0]
+            wind_situation = tmp.strip().split()[3].split('℃')[1][1:] + " " + tmp.strip().split()[4]
+            print(tplt.format(city, week, date_target, situation, temperature_min, temperature_max, air_quality, wind_situation))
             try:
-                insert_database(city_code, city, week, date_target, t1, temperature_min, temperature_max, t3, t4, today,
-                                create_time)
+                insert_database(city_code, city, week, date_target, situation, temperature_min, temperature_max, air_quality, wind_situation, sunrise, sunset,
+                                today, create_time)
                 insert_num = insert_num + 1
             except Exception as e:
                 ""
