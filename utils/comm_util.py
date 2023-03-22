@@ -17,6 +17,15 @@ def print_format(format_str, *args):
         print_ts(format_str)
 
 
+def print_format_str(format_str, *args):
+    """格式化打印日志"""
+    if len(args) > 0:
+        format_str = format_str + "%s"
+        print_ts(format_str % args)
+    else:
+        print_ts(format_str)
+
+
 def objToJson(obj, indent=None):
     import json
     jsonStr = json.dumps(obj, ensure_ascii=False, indent=indent)

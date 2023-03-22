@@ -2,10 +2,8 @@
 # Author: MoncozGC
 # Date  : 2022/3/10 19:23
 # Desc  :
-import logging
-from logging import handlers
 
-from PHDS.utils.CommUtil import print_ts, get_logger
+from YKYY.PHDS.utils.CommUtil import print_ts
 
 if __name__ == '__main__':
     # log = Logger('all.log', level='info')

@@ -1,6 +1,5 @@
 # 将浮点数n的小数点后p位舍入到0或5
 import math
-from decimal import Decimal
 
 
 def round_5(n, p):
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     print(myround2(3037.78, 2, 0.5))
 
     # 针对小数进位
-    from _pydecimal import Decimal, Context, ROUND_HALF_UP
+    from _pydecimal import Context, ROUND_HALF_UP
     print(Context(prec=1, rounding=ROUND_HALF_UP).create_decimal('0.1'))
 
     f_num = math.ceil(0.1)

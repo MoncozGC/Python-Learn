@@ -11,4 +11,4 @@ config.ini
 业务数据*
 
 # 文件过大排除
-WxChatRecordTool/message/message.json
+project/WxChatRecordTool/message/message.json

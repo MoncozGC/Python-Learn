@@ -3,7 +3,7 @@ _db_mng_map = {}
 
 
 def load_database_config(config):
-    from PHDS.database.class_define import DatabaseClearThread,DatabaseManagerBean
+    from YKYY.PHDS.database.class_define import DatabaseClearThread,DatabaseManagerBean
     db_clear_thread = DatabaseClearThread()
     # print('连接检测线程',db_clear_thread)
     for session in  config.sections():

@@ -25,7 +25,7 @@ conn = pymysql.connect(
 
 cur = conn.cursor()
 
-with open(r"./datas/小妞儿.txt", encoding='utf-8') as f:
+with open(r"datas/小妞儿.txt", encoding='utf-8') as f:
     lines = f.readlines()
     filter_lines = []
     reg = "^.+[\u4E00-\u9FFF]\s\(.+\):"

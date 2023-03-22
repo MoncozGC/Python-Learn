@@ -2,22 +2,22 @@ import json
 
 
 def parse():
-    with open('./raw_data.json', encoding='utf-8') as json_file:
+    with open('raw_data.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
     ans = {}
     for i in data:
         ans[i["short"]] = {}
         ans[i["short"]]['name_en'] = i['en']
         ans[i["short"]]['name_cn'] = i['name']
-    with open('./data.json', 'w', encoding='utf-8') as json_file:
+    with open('data.json', 'w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(ans, ensure_ascii=False, indent=4))
 
 
 def add_population():
-    with open('./raw_population.json', encoding='utf-8') as json_file:
+    with open('raw_population.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data2 = json.load(json_file)
 
     for i in data.keys():
@@ -25,15 +25,15 @@ def add_population():
             if i == data2[j]['name_en']:
                 data2[j]['population'] = data[i]
 
-    with open('./data.json', 'w', encoding='utf-8') as json_file:
+    with open('data.json', 'w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(data2, ensure_ascii=False, indent=4))
 
 
 def add_birth_rate():
-    with open('./raw_birth_data.json', encoding='utf-8') as json_file:
+    with open('raw_birth_data.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data2 = json.load(json_file)
 
     for i in data.keys():
@@ -41,15 +41,15 @@ def add_birth_rate():
             if i == data2[j]['name_en']:
                 data2[j]['birth_rate'] = data[i]
 
-    with open('./data.json', 'w', encoding='utf-8') as json_file:
+    with open('data.json', 'w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(data2, ensure_ascii=False, indent=4))
 
 
 def add_position():
-    with open('./raw_position.json', encoding='utf-8') as json_file:
+    with open('raw_position.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data2 = json.load(json_file)
 
     for i in data.keys():
@@ -57,15 +57,15 @@ def add_position():
             if i == data2[j]['name_cn']:
                 data2[j]['position'] = data[i]
 
-    with open('./data.json', 'w', encoding='utf-8') as json_file:
+    with open('data.json', 'w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(data2, ensure_ascii=False, indent=4))
         # json_file.write(json.dumps(data2, ensure_ascii=False, indent=4).replace('    ', '').replace('\n', '').replace('\n\r', ''))
 
 def add_continent():
-    with open('./raw_continent.json', encoding='utf-8') as json_file:
+    with open('raw_continent.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data2 = json.load(json_file)
 
     for i in data:
@@ -73,12 +73,12 @@ def add_continent():
             if j == i['country_code']:
                 data2[j]['continent'] = i['continent_name']
 
-    with open('./data.json', 'w', encoding='utf-8') as json_file:
+    with open('data.json', 'w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(data2, ensure_ascii=False, indent=4))
 
 
 def test():
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     for i in data.keys():
@@ -93,7 +93,7 @@ def test():
 
 
 def get_country_proportion():
-    with open('./data.json', encoding='utf-8') as json_file:
+    with open('data.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     result = []
@@ -115,7 +115,7 @@ def get_country_proportion():
         temp['position'] = data[key]['position']
         temp['birth_rate'] = round(birth_of_year / total_birth * 100, 4)
         result.append(temp)
-        with open('./result.json', 'w', encoding='utf-8') as json_file:
+        with open('result.json', 'w', encoding='utf-8') as json_file:
             json_file.write(json.dumps(result, ensure_ascii=False, indent=4))
             # json_file.write(json.dumps(result, ensure_ascii=False, indent=4).replace('    ', '').replace('\n', '').replace('\n\r', ''))
     # a = 0

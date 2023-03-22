@@ -2,17 +2,17 @@
 # Author: MoncozGC
 # Date  : 2022/5/26 21:26
 # Desc  :
-from PHDS.database.database_load import getDatabaseOperation
+from YKYY.PHDS.database.database_load import getDatabaseOperation
 
 
 def init(cmd):
     # 加载配置文件
-    from PHDS.config.app_config import load_config
+    from YKYY.PHDS.config.app_config import load_config
     # 文件夹名称
     appRootDir, config = load_config('Python-Employ', cmd)
 
     # 初始化数据库
-    from PHDS.database.database_load import load_database_config
+    from YKYY.PHDS.database.database_load import load_database_config
     load_database_config(config)
 
 
