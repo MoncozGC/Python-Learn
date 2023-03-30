@@ -3,6 +3,7 @@
 # Date  : 2023/3/28 10:55
 # Desc  : 化学成分分析, 使用多线程的方式
 # 化学名称与百度百科进行匹配, 打标记
+# 在这个示例中，我们创建了一个名为 fetch_keyword_content 的函数，它接收一个关键词作为参数，然后发起请求并解析页面。main 函数中使用了 ThreadPoolExecutor 类来并发执行 fetch_keyword_content 函数。这将显著提高抓取速度。最后，我们将结果保存在一个Excel文件中。
 
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
@@ -24,14 +25,19 @@ def fetch_keyword_content(keyword):
     if response.status_code == 200:
         content = response.text
         soup = BeautifulSoup(content, 'html.parser')
-        target_divs = soup.find('div', {'class': 'para', 'label-module': True})
+        target_divs = soup.find_all('div', {'class': 'para', 'label-module': True})[0:6]
 
-        if '化学' in str(target_divs) or '分子' in str(target_divs):
-            return {'flag': 1, 'cmtn': keyword, 'content': target_divs.text if target_divs else 'None'}
-        elif target_divs is None:
-            return {'flag': 0, 'cmtn': keyword, 'content': target_divs.text if target_divs else 'None'}
-        elif '化学' not in str(target_divs):
-            return {'flag': 0, 'cmtn': keyword, 'content': target_divs.text if target_divs else 'None'}
+        # 遍历数据, 获取到其中的文本数据去除标签, 并且为空的不进入
+        div_list = [div_para.text.strip() for div_para in target_divs if div_para.text]
+        # 将数据拼接为字符串
+        div_str = '\n'.join(div_list)
+
+        if '化学' in str(div_str) or '分子' in str(div_str):
+            return {'flag': 1, 'cmtn': keyword, 'content': div_str if div_str else 'None'}
+        elif div_str is None:
+            return {'flag': 0, 'cmtn': keyword, 'content': div_str if div_str else 'None'}
+        elif '化学' not in str(div_str):
+            return {'flag': 0, 'cmtn': keyword, 'content': div_str if div_str else 'None'}
     else:
         return {'cmtn': keyword, 'content': 'Request failed'}
 
