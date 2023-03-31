@@ -11,7 +11,7 @@ from utils.comm_util import *
 # import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    df = pd.read_csv('qunar_freetrip.csv', index_col=0)
+    df = pd.read_csv('../data/qunar_freetrip.csv', index_col=0)
     # 显示所有列
     pd.set_option('display.max_columns', None)
     # 显示所有行
