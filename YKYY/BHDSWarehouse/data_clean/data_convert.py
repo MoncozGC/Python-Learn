@@ -14,6 +14,11 @@ if __name__ == '__main__':
 
 
     def chinese_to_arabic(cn):
+        """
+        将中文量词转换为数字
+        :param cn:
+        :return:
+        """
         cn_num = {
             '零': 0, '一': 1, '二': 2, '三': 3, '四': 4,
             '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
@@ -34,6 +39,11 @@ if __name__ == '__main__':
 
 
     def convert_to_days(text):
+        """
+        数据转换, 并且获取同文本中的最小值
+        :param text:
+        :return:
+        """
         results = re.findall(r'(\d+|[一二三四五六七八九十]+)([个]*月|年|天)', text)
         # 正无穷
         min_days = float('inf')
