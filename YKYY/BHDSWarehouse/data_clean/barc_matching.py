@@ -228,7 +228,15 @@ def barc_matching(gds_barc_df, gds_bs_df):
             # 更新记录条数 +1
             update_num[matching_weight] += 1
 
-    print_ts("【商品基础信息表-条形码】, bdcp_stg.stg_spr_gdsbs 更新数据条数: %d \n数据详细更新情况: %s" % (len(barc_list), update_num))
+    print_ts("【商品基础信息表-条形码】, bdcp_stg.stg_spr_gdsbs 更新数据条数: %d" % len(barc_list))
+    print_ts("详细数据信息: ")
+    """
+    使用列表推导式, 对dict进行排序并打印
+    使用map()函数将lambda函数应用于排序厚的键列表, lambda函数的作用是接受一个键, 并打印相应的键值对.
+    通过lambda函数应用于每一个键
+    因为map函数本身是惰性的, 所以转换为列表以确保lambda函数立即执行并打印所有键值对
+    """
+    list(map(lambda key: print(f"{key} : {update_num[key]}"), sorted(update_num)))
 
 
 def test_data():
