@@ -4,8 +4,9 @@ Author: MoncozGC
 Date  : 2022/1/3 22:38
 Desc  : 将生成微信聊天记录TXT文本, 写入到数据库中
 """
-import pymysql
 import re
+
+import pymysql
 
 # conn = pymysql.connect(
 #     host='xxxxx',
@@ -25,7 +26,7 @@ conn = pymysql.connect(
 
 cur = conn.cursor()
 
-with open(r"datas/小妞儿.txt", encoding='utf-8') as f:
+with open(r"../datas/小妞儿.txt", encoding='utf-8') as f:
     lines = f.readlines()
     filter_lines = []
     reg = "^.+[\u4E00-\u9FFF]\s\(.+\):"

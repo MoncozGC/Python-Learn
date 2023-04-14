@@ -3,10 +3,11 @@
 # Desc  : 爬取B站评论区信息.
 # Notice: 设置BV号138行, 设置间隔时长避免被封135行
 # encoding: utf-8
+import re
+import time
+
 import requests
 import urllib3
-import time
-import re
 
 urllib3.disable_warnings()
 

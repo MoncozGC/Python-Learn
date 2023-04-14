@@ -4,12 +4,13 @@
 # Desc  : 获取虎牙直播源地址
 # 获取虎牙直播的真实流媒体地址。
 # 虎牙"一起看"频道的直播间可能会卡顿
-import requests
-import re
 import base64
-import urllib.parse
 import hashlib
+import re
 import time
+import urllib.parse
+
+import requests
 
 
 def live(e):

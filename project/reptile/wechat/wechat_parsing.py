@@ -5,10 +5,11 @@ Date  : 2022/1/3 23:40
 Desc  : 解析微信聊天记录存储到数据库中的数据
 """
 import functools
-
-import pymysql
-import jieba
 import json
+
+import jieba
+import pymysql
+
 
 # 读取停用词列表
 def get_stropword_list(file):
@@ -29,7 +30,7 @@ def clean_stopWord(str, stopword_list):
     return result
 
 
-stopword_file = r'datas/stopwords.txt'
+stopword_file = r'../datas/stopwords.txt'
 # 获得停用词列表
 stopword_list = get_stropword_list(stopword_file)
 
@@ -77,7 +78,7 @@ for word in word_count_map:
         'count': word_count_map[word]
     }
     word_count_arr.append(o)
-    with open('datas/result.txt', "a+", encoding="utf-8") as f2:
+    with open('../datas/result.txt', "a+", encoding="utf-8") as f2:
         f2.write(f"{word}\t{word_count_map[word]}\n")
 
 
@@ -91,7 +92,7 @@ def custom_sort(x, y):
 
 result['word'] = sorted(word_count_arr, key=functools.cmp_to_key(custom_sort))
 
-with open("datas/result.json", "w", encoding="utf-8") as f:
+with open("../datas/result.json", "w", encoding="utf-8") as f:
     f.write(
         json.dumps(result, ensure_ascii=False)
     )

@@ -51,7 +51,7 @@ def save_info(link_info, date, text):
     :param date: 时间
     :param text: 详细文本信息
     """
-    file = open("datas/nCov_2019_info.txt", 'a', encoding='utf-8')
+    file = open("../datas/nCov_2019_info.txt", 'a', encoding='utf-8')
     file.write(date + "\n" + link_info + "\n" + text + "\n\n")
     file.close()
 
