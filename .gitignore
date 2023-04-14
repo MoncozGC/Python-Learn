@@ -2,6 +2,7 @@
 build/
 dist/
 config.ini
+data/
 
 # 排除文件
 *.exe*
