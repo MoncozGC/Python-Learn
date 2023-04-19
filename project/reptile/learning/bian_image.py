@@ -2,8 +2,26 @@
 # Author: MoncozGC
 # Date  : 2023/4/19 10:06
 # Desc  : 彼岸图网, 图片获取
+import os
+
 import requests
 from lxml import etree
+
+
+def small_pic():
+    """
+    只能获取到小图片
+    :return:
+    """
+    # 获取图片名称和链接
+    image_name = li.xpath('./a/img/@alt')[0] + '.jpg'
+    image_url = 'http://pic.netbian.com/' + li.xpath('./a/img/@src')[0]
+
+    image_content = requests.get(url=image_url, headers=header).content
+    # 写入数据
+    with open('./data/' + image_name, 'wb') as fp:
+        fp.write(image_content)
+
 
 if __name__ == '__main__':
     url = 'http://pic.netbian.com/4kdongman/'
@@ -18,12 +36,8 @@ if __name__ == '__main__':
     # 解析成HTML
     tree = etree.HTML(index_text)
 
-    for li in tree.xpath("//div[@class='slist']/ul[@class='clearfix']/li"):
-        # 获取图片名称和链接
-        image_name = li.xpath('./a/img/@alt')[0] + '.jpg'
-        image_url = 'http://pic.netbian.com/' + li.xpath('./a/img/@src')[0]
+    if not os.path.exists('./data'):
+        os.mkdir('./data')
 
-        image_content = requests.get(url=image_url, headers=header).content
-        # 写入数据
-        with open('./data/' + image_name, 'wb') as fp:
-            fp.write(image_content)
+    for li in tree.xpath("//div[@class='slist']/ul[@class='clearfix']/li"):
+        small_pic()
