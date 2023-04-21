@@ -13,6 +13,7 @@ from selenium.webdriver.common.keys import Keys
 
 if __name__ == "__main__":
     word = input("请输入要爬取的商品名称")
+    # 目前只能爬一页, 京东将页面的标签从源码中剔除导致无法找到对应数据跳转
     page_size = int(input("请输入要爬取的页数"))
     chrome_options = Options()
     # chrome_options.add_argument('--headless')  # 设置无界面模式
