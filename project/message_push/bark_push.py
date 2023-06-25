@@ -9,19 +9,25 @@ import subprocess
 import requests
 
 from project.message_push.push_common import dir_info
+from utils.comm_util import print_ts
+from utils.config_util import get_root_path
 
 config = configparser.ConfigParser()
-config.read('../../config.ini', encoding='utf-8')
+config.read(get_root_path() + '/config.ini', encoding='utf-8')
 deviceKey = config.get('message_push', 'deviceKey')
 
-def send_bark(message, group_name):
+
+def send_bark(message, group_name, title='推送通知'):
     """
     使用python推送消息
-    :param message:
+    :param title: 推送标题
+    :param message: 推送内容
+    :param group_name: 消息分组
     :return:
     """
     url = f'https://api.day.app/{deviceKey}'
     param = {
+        'title': title,
         'body': message,
         'level': 'active',
         'group': group_name
@@ -30,6 +36,15 @@ def send_bark(message, group_name):
 
 
 def bark_encr_push(message, group_name='', sound='birdsong', icon_name=''):
+    """
+    加密推送方式
+    :param message: 推送内容
+    :param group_name: 消息分组
+    :param sound: 推送铃声
+    :param icon_name: 推送图标
+    :return:
+    """
+
     """
     使用shell脚本加密推送消息
 
@@ -42,6 +57,7 @@ def bark_encr_push(message, group_name='', sound='birdsong', icon_name=''):
     """
     shell_script_path = 'bark_encr_push.sh'
 
+    print_ts("加密推送...")
     # 方式一:
     # subprocess.run(['cmd', '/c', 'bash', shell_script_path, '传递参数'],
     #                         stdout=subprocess.PIPE,
@@ -59,6 +75,6 @@ def bark_encr_push(message, group_name='', sound='birdsong', icon_name=''):
 if __name__ == '__main__':
     text = dir_info(__file__)
     group = '开发通知'
-    # send_bark(text, group)
+    send_bark(text, group)
 
-    bark_encr_push(text, '开发通知', 'birdsong', 'icon_dev.png')
+    # bark_encr_push(text, '开发通知', 'birdsong', 'icon_dev.png')
