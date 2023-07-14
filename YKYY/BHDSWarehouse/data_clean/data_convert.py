@@ -2,9 +2,10 @@
 # Author: MoncozGC
 # Date  : 2023/4/6 22:47
 # Desc  : 根据匹配规则转换数据, 并且获取同一段文本中的最小指标数据
+import re
+
 if __name__ == '__main__':
     import pandas as pd
-    import re
 
     data = {
         'vod': ['非PVC软袋：24个月；聚丙烯塑料瓶：48个月', '六个月', '六月', '五年']

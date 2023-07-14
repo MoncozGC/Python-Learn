@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# Author: pengqi
+# Author: MoncozGC
 # Date  : 2023/3/23
 # Desc  : 批量重命名字段
 # 场景: 对一个dataframe处理合并是, 因为会有相同的字段名, 所以会自动给字段名加上后缀. _x, _y

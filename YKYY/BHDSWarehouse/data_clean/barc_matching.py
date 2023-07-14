@@ -16,7 +16,6 @@
 111110: 匹配通用名 + 批准文号 + 生产厂家or上市持久人 + 商品名
 111111: 匹配通用名(cmnzn) + 批准文号(adn) + 生产厂家or上市持久人(mftzn or mltzn) + 商品名(gdsn) + 包装规格(pckspec)
 """
-import re
 
 import numpy as np
 import pandas as pd
