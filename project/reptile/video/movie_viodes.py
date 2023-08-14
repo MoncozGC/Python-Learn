@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 # Author: MoncozGC
 # Date  : 2023-08-13
-# Desc  : 将视频文件根据十分钟进行分割 and .ts小文件进行合并为一个文件
+# Desc  : 将视频文件根据十分钟进行分割 and 将多个mp4文件合并成一个 and .ts小文件进行合并为一个文件
 import glob
 import os
+import subprocess
 
+from moviepy.video.compositing.concatenate import concatenate_videoclips
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from natsort import natsorted
 
@@ -40,7 +42,27 @@ def split_long_videos(input_dir, output_dir, max_duration=600):
         video_clip.close()
 
 
-import subprocess
+def merge_split_to_mp4(video_files, output_split_file):
+    """
+    合并多个文件
+    :param video_files: 文件列表
+    :param output_split_file: 输出文件目录
+    :return:
+    """
+    # 创建一个 VideoFileClip 对象列表
+    video_clips = [VideoFileClip(file) for file in video_files]
+
+    # 使用 concatenate_videoclips 函数将视频片段合并
+    final_clip = concatenate_videoclips(video_clips)
+
+    # 将合并后的视频保存为文件
+    final_clip.write_videofile(output_split_file, codec="libx264")
+
+    # 关闭所有视频剪辑对象
+    for clip in video_clips:
+        clip.close()
+
+    print("视频合并完成！")
 
 
 def merge_ts_to_mp4(ts_files, output_file):
@@ -66,3 +88,9 @@ if __name__ == '__main__':
     input_folder = "data/output_videos"
     output_folder = "data/output_videos2.ts"
     split_long_videos(input_folder, output_folder, max_duration=600)
+
+    # 将多个文件合并成一个文件
+    ts_dir = 'data\\video\MFFvtsib_split'
+    ts_files = natsorted(glob.glob(os.path.join(ts_dir, '*.mp4')))
+    output_file = 'DLEAgqxM.mp4'
+    merge_split_to_mp4(ts_files, output_file)
