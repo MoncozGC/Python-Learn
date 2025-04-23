@@ -94,6 +94,31 @@ def get_oracle_tables_dict(connection_string, schema=None, table_name=None):
         connection.close()
 
 
+def get_oracle_vies_sql(connection_string, schema, output_file=None):
+    # 连接Oracle数据库
+    connection = cx_Oracle.connect(connection_string)
+    cursor = connection.cursor()
+
+    try:
+        SQL = """SELECT VIEW_NAME, TEXT FROM ALL_VIEWS WHERE OWNER = NVL(:schema, OWNER) """
+        cursor.execute(SQL, {schema: schema.upper() if schema else None})
+
+        report = "# Oracle数据库视图SQL\n\n"
+        for row in cursor:
+            report += f"## 视图名称: {row[0]}\n\n```sql\n{row[1]}\n```\n\n"
+
+        # 输出到文件或控制台
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(report)
+            print(f"数据视图已生成到: {output_file}")
+        else:
+            print(report)
+    finally:
+        cursor.close()
+        connection.close()
+
+
 def generate_markdown_report(tables_dict, output_file=None):
     """
     生成Markdown格式的数据字典报告
@@ -148,3 +173,6 @@ if __name__ == "__main__":
 
     # 生成Markdown报告
     generate_markdown_report(tables_dict, output_file="oracle_data_dictionary.md")
+
+    # 获取视图MD报告
+    get_oracle_vies_sql(connection_string, schema, output_file="oracle_data_views.md")
